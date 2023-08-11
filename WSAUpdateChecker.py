@@ -18,15 +18,14 @@
 # Copyright (C) 2023 LSPosed Contributors
 #
 
-import html
-import logging
 import os
-import json
 import time
+import html
+import json
 import urllib
-import urllib.request
-import subprocess
+import logging
 import requests
+import urllib.request
 
 from typing import Any, OrderedDict
 from xml.dom import minidom
@@ -319,16 +318,6 @@ while 1:
                         url,
                         flag
                     )
-                    with open(dir + "WSA-Archivev\\UpdateInfo.cfg", "w") as f:
-                        f.write(f"Version={key.split('_')[1]}\nUpdateID={identities[key][0][0]}\nURL={url}")
-                        f.close()
-                    git = (
-                        dir.split("\\")[0] + " && cd " + dir + "\\WSA-Archive && git init && "
-                        "git add UpdateInfo.cfg && git commit -m \"Update version " + key.split("_")[1] + "\" && "
-                        "git push && exit"
-                    )
-                    #git = dir.split("\\")[0] + " && cd " + dir + "\\WSA-Archive && git init && git add UpdateInfo.cfg && git commit -m \"Update version " + key.split('_')[1] + "\" && git push --set-upstream WSA-Archive main && exit"
-                    subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()
                     print("New version found: " + key.split("_")[1])
                     print("File name: " + "MicrosoftCorporationII.WindowsSubsystemForAndroid_" + key.split("_")[1] + "_neutral_~_8wekyb3d8bbwe.Msixbundle")
                     print("URL: " + url)
@@ -354,14 +343,6 @@ while 1:
             print("")
         elif newverflag == 1:
             newverflag = 0
-        git = (
-            dir.split("\\")[0] + " && cd " + dir + "\\WSA-Archive && git init && "
-            "git add UpdateInfo.cfg && git commit -m \"Update lost\" && "
-            "git push && exit"
-        )
-        #git = dir.split("\\")[0] + " && cd " + dir + "\\WSA-Archive && git init && git add UpdateInfo.cfg && git commit -m \"Update lost\"" + " && git push --set-upstream WSA-Archive main && exit"
-        subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()
-        print()
         if flag == 1:
             for i in range(timer,-1,-1):
                 print(f"\rThe program will reboot in {i} seconds.",end="")
