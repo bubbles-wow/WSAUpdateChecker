@@ -281,11 +281,11 @@ for user in users:
                     url,
                     flag
                 )
-                with open("UpdateInfo.cfg", "w") as f:
+                with open("./WSA-Archive/UpdateInfo.cfg", "w") as f:
                     f.write(f"Version={key.split('_')[1]}\nUpdateID={identities[key][0][0]}\nURL={url}")
                     f.close()
                 git = (
-                    "cp -f UpdateInfo.cfg ./WSA-Archive && cd ./WSA-Archive && "
+                    "cd ./WSA-Archive && "
                     "git add UpdateInfo.cfg && "
                     "git commit -m \"Update version " + key.split("_")[1] + "\" && "
                     "git push origin main && exit"
