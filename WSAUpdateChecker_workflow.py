@@ -306,12 +306,6 @@ for user in users:
         ),
         reverse=False
     )
-    git = (
-        "git add versionlist.json && git commit -m \"Update lost UpdateID\" && "
-        "git push && exit"
-    )
-    subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()
-    url = getURL(user, identities[max(info_list)][0][0], identities[max(info_list)][0][1], release_type)
     if url == "null":
         break
     if newverflag == 0:
@@ -319,10 +313,15 @@ for user in users:
         print("File name: MicrosoftCorporationII.WindowsSubsystemForAndroid_" + max(info_list).split("_")[1] + "_neutral_~_8wekyb3d8bbwe.Msixbundle")
         print("URL: " + url)
         print("")
-    print()
     if flag == 0:
         flag = 1
         release_id = identities[max(info_list)][0][0]
     else:
         print("Done!\n")
+git = (
+    "git add versionlist.json && git commit -m \"Update lost UpdateID\" && "
+    "git push && exit"
+)
+subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()
+url = getURL(user, identities[max(info_list)][0][0], identities[max(info_list)][0][1], release_type)
         
