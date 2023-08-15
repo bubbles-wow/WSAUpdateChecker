@@ -122,6 +122,9 @@ def calculate_hashes(data):
         sha256_hash.update(chunk)
     return md5_hash.hexdigest(), sha256_hash.hexdigest()
 
+git = "git config --global user.email '917749218@qq.com' && git config --global user.name 'bubbles-wow'"
+subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()
+
 users = {""}
 try:
     response = requests.get("https://api.github.com/repos/bubbles-wow/MS-Account-Token/contents/token.cfg")
@@ -311,8 +314,9 @@ for user in users:
         ),
         reverse=False
     )
+    url = getURL(user, identities[max(info_list)][0][0], identities[max(info_list)][0][1], release_type)
     if url == "null":
-        break
+        print("Failed to get URL!")
     if newverflag == 0:
         print("Latest version: " + max(info_list).split("_")[1])
         print("File name: MicrosoftCorporationII.WindowsSubsystemForAndroid_" + max(info_list).split("_")[1] + "_neutral_~_8wekyb3d8bbwe.Msixbundle")
