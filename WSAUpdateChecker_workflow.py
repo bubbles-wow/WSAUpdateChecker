@@ -82,7 +82,12 @@ def getURL(user, UpdateID, RevisionNumber, ReleaseType):
         )
     except:
         print("\rNetwork Error!")
-        exit()
+        time.sleep(1)
+        return "null"
+    if len(out.text) < 1500:
+        print("Failed to get URL!")
+        time.sleep(1)
+        return "null"
     doc = minidom.parseString(out.text)
     for l in doc.getElementsByTagName("FileLocation"):
         url = l.getElementsByTagName("Url")[0].firstChild.nodeValue
@@ -119,8 +124,7 @@ def calculate_hashes(data):
 
 users = {""}
 try:
-    url = "https://api.github.com/repos/bubbles-wow/MS-Account-Token/contents/token.cfg"
-    response = requests.get(url)
+    response = requests.get("https://api.github.com/repos/bubbles-wow/MS-Account-Token/contents/token.cfg")
     if response.status_code == 200:
         content = response.json()["content"]
         content = content.encode("utf-8")

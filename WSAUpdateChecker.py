@@ -107,6 +107,9 @@ def getURL(user, UpdateID, RevisionNumber, ReleaseType):
             time.sleep(1)
         print("\n")
         return "null"
+    if len(out.text) < 1500:
+        print("Failed to get URL!")
+        return "null"
     doc = minidom.parseString(out.text)
     for l in doc.getElementsByTagName("FileLocation"):
         url = l.getElementsByTagName("Url")[0].firstChild.nodeValue
