@@ -225,6 +225,7 @@ for user in users:
     #record if the version is already in the list
     #if not, add it to the list
     markflag = 0
+    url = "null"
     for key in info_list:
         if key.split("_")[0] == "MicrosoftCorporationII.WindowsSubsystemForAndroid":
             #empty list, add item
