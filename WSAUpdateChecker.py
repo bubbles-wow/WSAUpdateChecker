@@ -312,7 +312,7 @@ while 1:
                     with open(dir + "\\versionlist.json", "w") as f:   
                         f.write(json.dumps(list, indent=4))
                         f.close()
-                        url = getURL(user, identities[key][0][0], identities[key][0][1], release_type)
+                    url = getURL(user, identities[key][0][0], identities[key][0][1], release_type)
                     while url == "null":
                         url = getURL(user, identities[key][0][0], identities[key][0][1], release_type)
                     sendEmail(
