@@ -81,12 +81,8 @@ def getURL(user, UpdateID, RevisionNumber, ReleaseType):
             headers={'Content-Type': 'application/soap+xml; charset=utf-8'}
         )
     except:
-        print("\rNetwork Error!")
-        time.sleep(1)
         return "null"
     if len(out.text) < 1500:
-        print("Failed to get URL!")
-        time.sleep(1)
         return "null"
     doc = minidom.parseString(out.text)
     for l in doc.getElementsByTagName("FileLocation"):
@@ -100,9 +96,11 @@ def sendEmail(Version, Filename, URL, betaflag):
     pwd = 'MJHEWYMVTCYSPEBE'
     receiver = ['917749218@qq.com']
     if betaflag == 0:
-        mail_title = "New released update for WSA! Version " + Version + " is now available!"
-    else:
-        mail_title = "New beta update for WSA! Version " + Version + " is now available!"
+        mail_title = f"[WSA]retail version {Version} Updated!"
+    if betaflag == 1:
+        mail_title = f"[WSA]Windows Insider version {Version} Updated!"
+    if betaflag == 2:
+        mail_title = f"[WSA]WSA Insider version {Version} Updated!"
     mail_content = "File Name: " + Filename + "\nURL: " + URL
     msg = MIMEMultipart()
     msg["Subject"] = Header(mail_title,'utf-8')
@@ -122,38 +120,19 @@ def calculate_hashes(data):
         sha256_hash.update(chunk)
     return md5_hash.hexdigest(), sha256_hash.hexdigest()
 
-git = "git config --global user.email '917749218@qq.com' && git config --global user.name 'bubbles-wow'"
-subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()
-
-users = {""}
-try:
-    response = requests.get("https://api.github.com/repos/bubbles-wow/MS-Account-Token/contents/token.cfg")
-    if response.status_code == 200:
-        content = response.json()["content"]
-        content = content.encode("utf-8")
-        content = base64.b64decode(content)
-        text = content.decode("utf-8")
-        user_code = Prop(text).get("user_code")
-        updatetime = Prop(text).get("update_time")
-        print("Successfully get user token from server!")
-        print(f"Last update time: {updatetime}\n")
-    else:
-        user_code = ""
-        print(f"Failed to get user token from server! Error code: {response.status_code}\n")
-except:
-    user_code = ""
-if user_code == "":
-    users = {""}
-else:
-    user_token = user_code
-users = {"", user_token}
-print("Generating WSA download link...\n")
-flag = 0
-for user in users:
-    if user == "":
-        print("Checking release version...\n")
-    else:
-        print("Checking beta version...\n")
+def checker(user, release_type, list = list):
+    #flag == 0 -> retail version
+    #flag == 1 -> Windows Insider version
+    #flag == 2 -> WSA Insider version
+    flag = 0
+    #newverflag == 0 -> no new version
+    #newverflag == 1 -> new version found
+    newverflag = 0
+    global release_id
+    if release_type == "WIF":
+        flag = 1
+    if user != "":
+        flag = 2
     with open("./xml/GetCookie.xml", "r") as f:
         cookie_content = f.read().format(user)
         f.close()
@@ -164,11 +143,8 @@ for user in users:
             headers={'Content-Type': 'application/soap+xml; charset=utf-8'}
         )
     except:
-        for i in range(timer,-1,-1):
-            print(f"\rNetwork Error! The program will retry in {i} seconds.",end="")
-            time.sleep(1)
-        print("\n")
-        break
+        print("Network Error!")
+        return 1
     doc = minidom.parseString(out.text)
     cookie = doc.getElementsByTagName('EncryptedData')[0].firstChild.nodeValue
     with open("./xml/WUIDRequest.xml", "r") as f:
@@ -181,8 +157,8 @@ for user in users:
             headers={'Content-Type': 'application/soap+xml; charset=utf-8'}
         )
     except:
-        print(f"Network Error!",end="")
-        exit()
+        print("Network Error!")
+        return 1
     doc = minidom.parseString(html.unescape(out.text))
     filenames = {}
     for node in doc.getElementsByTagName('ExtendedUpdateInfo')[0].getElementsByTagName('Updates')[0].getElementsByTagName('Update'):
@@ -222,9 +198,12 @@ for user in users:
         ),
         reverse=False
     )
-    if flag == 1 and release_id == identities[max(info_list)][0][0]:
-        print("Your user token is invalid, please check it.")
-        exit()
+    if flag == 1:
+        release_id = identities[max(info_list)][0][0]
+    if flag == 2:
+        if identities[max(info_list)][0][0] == release_id:
+            print("Invaild token!")
+            return 1
     #record if the version is already in the list
     #if not, add it to the list
     markflag = 0
@@ -317,20 +296,55 @@ for user in users:
     url = getURL(user, identities[max(info_list)][0][0], identities[max(info_list)][0][1], release_type)
     if url == "null":
         print("Failed to get URL!")
+        return 1
     if newverflag == 0:
         print("Latest version: " + max(info_list).split("_")[1])
         print("File name: MicrosoftCorporationII.WindowsSubsystemForAndroid_" + max(info_list).split("_")[1] + "_neutral_~_8wekyb3d8bbwe.Msixbundle")
         print("URL: " + url)
         print("")
-    if flag == 0:
-        flag = 1
-        release_id = identities[max(info_list)][0][0]
+
+git = "git config --global user.email '917749218@qq.com' && git config --global user.name 'bubbles-wow'"
+subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()
+
+users = {""}
+try:
+    response = requests.get("https://api.github.com/repos/bubbles-wow/MS-Account-Token/contents/token.cfg")
+    if response.status_code == 200:
+        content = response.json()["content"]
+        content = content.encode("utf-8")
+        content = base64.b64decode(content)
+        text = content.decode("utf-8")
+        user_code = Prop(text).get("user_code")
+        updatetime = Prop(text).get("update_time")
+        print("Successfully get user token from server!")
+        print(f"Last update time: {updatetime}\n")
     else:
-        print("Done!\n")
+        user_code = ""
+        print(f"Failed to get user token from server! Error code: {response.status_code}\n")
+except:
+    user_code = ""
+if user_code == "":
+    users = {""}
+else:
+    user_token = user_code
+users = {"", user_token}
+print("Generating WSA download link...\n")
+flag = 0
+for user in users:
+    if user == "":
+        print("Checking retail version...\n")
+        if checker(user, "retail") == 1:
+            break
+        print("Checking Windows Insider version...\n")
+        if checker(user, "WIF") == 1:
+            break
+    else:
+        print("Checking WSA Insider version...\n")
+        if checker(user, "WIF") == 1:
+            break
 git = (
     "git add versionlist.json && git commit -m \"Update lost UpdateID\" && "
     "git push && exit"
 )
 subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()
-url = getURL(user, identities[max(info_list)][0][0], identities[max(info_list)][0][1], release_type)
         

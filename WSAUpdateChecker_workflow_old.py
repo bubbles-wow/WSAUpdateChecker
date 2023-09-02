@@ -1,31 +1,12 @@
-#!/usr/bin/python3
-#
-# This file is part of MagiskOnWSALocal.
-#
-# MagiskOnWSALocal is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
-#
-# MagiskOnWSALocal is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with MagiskOnWSALocal.  If not, see <https://www.gnu.org/licenses/>.
-#
-# Copyright (C) 2023 LSPosed Contributors
-#
-
 import os
-import time
 import html
 import json
-import urllib
+import time
+import base64
 import logging
+import hashlib
 import requests
-import urllib.request
+import subprocess
 
 from typing import Any, OrderedDict
 from xml.dom import minidom
@@ -33,11 +14,10 @@ from xml.dom import minidom
 from requests import Session
 
 from smtplib import SMTP_SSL
+from email.header import Header
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from email.header import Header
 
-from plyer import notification
 
 class Prop(OrderedDict):
     def __init__(self, props: str = ...) -> None:
@@ -59,7 +39,7 @@ timer = 60
 logging.captureWarnings(True)
 dir = os.path.dirname(__file__)
 
-ms_account_conf = dir + "\\.ms_account"
+release_type = "WIF"
 
 #Catagory ID
 cat_id = '858014f3-3934-4abe-8078-4aa193e74ca8'
@@ -69,25 +49,29 @@ session.verify = False
 
 user_token = ""
 
+#flag == 0 -> release version
+#flag == 1 -> beta version
+flag = 0
+
+#newverflag == 0 -> no new version
+#newverflag == 1 -> new version found
+newverflag = 0
+
+tokenflag = "00"
+
 #check if release UpdateID is the same as the beta one
 release_id = ""
 
 list = []
-if os.path.exists(dir + "\\versionlist.json"):
-    with open(dir + "\\versionlist.json", "r") as f:
+if os.path.exists("versionlist.json"):
+    with open("versionlist.json", "r") as f:
         mainjson = json.loads(f.read())
         f.close()
     for i in mainjson:
         list.append(i)
 
-def waitfortimer():
-    for i in range(timer,-1,-1):
-        print(f"\rThe program will retry in {i} seconds.",end="")
-        time.sleep(1)
-    print("\n")
-
 def getURL(user, UpdateID, RevisionNumber, ReleaseType):
-    with open(dir + "\\xml\\FE3FileUrl.xml", "r") as f:
+    with open("./xml/FE3FileUrl.xml", "r") as f:
         FE3_file_content = f.read()
         f.close()
     try:
@@ -97,9 +81,12 @@ def getURL(user, UpdateID, RevisionNumber, ReleaseType):
             headers={'Content-Type': 'application/soap+xml; charset=utf-8'}
         )
     except:
+        print("\rNetwork Error!")
+        time.sleep(1)
         return "null"
     if len(out.text) < 1500:
         print("Failed to get URL!")
+        time.sleep(1)
         return "null"
     doc = minidom.parseString(out.text)
     for l in doc.getElementsByTagName("FileLocation"):
@@ -113,14 +100,9 @@ def sendEmail(Version, Filename, URL, betaflag):
     pwd = 'MJHEWYMVTCYSPEBE'
     receiver = ['917749218@qq.com']
     if betaflag == 0:
-        message = "[WSA]retail version Updated!"
-        mail_title = f"[WSA]retail version {Version} Updated!"
-    if betaflag == 1:
-        message = "[WSA]Windows Insider version Updated!"
-        mail_title = f"[WSA]Windows Insider version {Version} Updated!"
-    if betaflag == 2:
-        message = "[WSA]WSA Insider version Updated!"
-        mail_title = f"[WSA]WSA Insider version {Version} Updated!"
+        mail_title = "New released update for WSA! Version " + Version + " is now available!"
+    else:
+        mail_title = "New beta update for WSA! Version " + Version + " is now available!"
     mail_content = "File Name: " + Filename + "\nURL: " + URL
     msg = MIMEMultipart()
     msg["Subject"] = Header(mail_title,'utf-8')
@@ -131,28 +113,48 @@ def sendEmail(Version, Filename, URL, betaflag):
     smtp.login(sender_address,pwd)
     smtp.sendmail(sender_address,receiver,msg.as_string())
     smtp.quit()
-    title = "WSA version " + Version + " is now available!"
-    notification.notify(
-            title = title,
-            message = message,
-            app_icon = dir + "\\wsa.ico",
-            timeout = 5,
-        )
 
-def checker(user, release_type, list=list):
-    #flag == 0 -> retail version
-    #flag == 1 -> Windows Insider version
-    #flag == 2 -> WSA Insider version
-    flag = 0
-    #newverflag == 0 -> no new version
-    #newverflag == 1 -> new version found
-    newverflag = 0
-    global release_id
-    if release_type == "WIF":
-        flag = 1
-    if user != "":
-        flag = 2
-    with open(dir + ("\\xml\\GetCookie.xml"), "r") as f:
+def calculate_hashes(data):
+    md5_hash = hashlib.md5()
+    sha256_hash = hashlib.sha256()
+    for chunk in data.iter_content(8192):
+        md5_hash.update(chunk)
+        sha256_hash.update(chunk)
+    return md5_hash.hexdigest(), sha256_hash.hexdigest()
+
+git = "git config --global user.email '917749218@qq.com' && git config --global user.name 'bubbles-wow'"
+subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()
+
+users = {""}
+try:
+    response = requests.get("https://api.github.com/repos/bubbles-wow/MS-Account-Token/contents/token.cfg")
+    if response.status_code == 200:
+        content = response.json()["content"]
+        content = content.encode("utf-8")
+        content = base64.b64decode(content)
+        text = content.decode("utf-8")
+        user_code = Prop(text).get("user_code")
+        updatetime = Prop(text).get("update_time")
+        print("Successfully get user token from server!")
+        print(f"Last update time: {updatetime}\n")
+    else:
+        user_code = ""
+        print(f"Failed to get user token from server! Error code: {response.status_code}\n")
+except:
+    user_code = ""
+if user_code == "":
+    users = {""}
+else:
+    user_token = user_code
+users = {"", user_token}
+print("Generating WSA download link...\n")
+flag = 0
+for user in users:
+    if user == "":
+        print("Checking release version...\n")
+    else:
+        print("Checking beta version...\n")
+    with open("./xml/GetCookie.xml", "r") as f:
         cookie_content = f.read().format(user)
         f.close()
     try:
@@ -162,11 +164,14 @@ def checker(user, release_type, list=list):
             headers={'Content-Type': 'application/soap+xml; charset=utf-8'}
         )
     except:
-        print("Network error!")
-        return 1
+        for i in range(timer,-1,-1):
+            print(f"\rNetwork Error! The program will retry in {i} seconds.",end="")
+            time.sleep(1)
+        print("\n")
+        break
     doc = minidom.parseString(out.text)
     cookie = doc.getElementsByTagName('EncryptedData')[0].firstChild.nodeValue
-    with open(dir + "\\xml\\WUIDRequest.xml", "r") as f:
+    with open("./xml/WUIDRequest.xml", "r") as f:
         cat_id_content = f.read().format(user, cookie, cat_id, release_type)
         f.close()
     try:
@@ -176,8 +181,8 @@ def checker(user, release_type, list=list):
             headers={'Content-Type': 'application/soap+xml; charset=utf-8'}
         )
     except:
-        print("Network error!")
-        return 1
+        print(f"Network Error!",end="")
+        exit()
     doc = minidom.parseString(html.unescape(out.text))
     filenames = {}
     for node in doc.getElementsByTagName('ExtendedUpdateInfo')[0].getElementsByTagName('Updates')[0].getElementsByTagName('Update'):
@@ -202,7 +207,7 @@ def checker(user, release_type, list=list):
                 fileinfo = filenames[id]
                 if fileinfo[0] not in identities:
                     identities[fileinfo[0]] = ([update_identity.attributes['UpdateID'].value,
-                                                update_identity.attributes['RevisionNumber'].value], fileinfo[1])
+                                            update_identity.attributes['RevisionNumber'].value], fileinfo[1])
     info_list = []
     for value in filenames.values():
         if value[0].find("_neutral_") != -1:
@@ -217,15 +222,13 @@ def checker(user, release_type, list=list):
         ),
         reverse=False
     )
-    if flag == 1:
-        release_id = identities[max(info_list)][0][0]
-    if flag == 2:
-        if identities[max(info_list)][0][0] == release_id:
-            print("Invaild token!")
-            return 1
+    if flag == 1 and release_id == identities[max(info_list)][0][0]:
+        print("Your user token is invalid, please check it.")
+        exit()
     #record if the version is already in the list
     #if not, add it to the list
     markflag = 0
+    url = "null"
     for key in info_list:
         if key.split("_")[0] == "MicrosoftCorporationII.WindowsSubsystemForAndroid":
             #empty list, add item
@@ -237,7 +240,7 @@ def checker(user, release_type, list=list):
                     #found, check UpdateID
                     if identities[key][0][0] not in list[num]["UpdateID"]:
                         list[num]["UpdateID"].append(identities[key][0][0])
-                        with open(dir + "\\versionlist.json", "w") as f:   
+                        with open("versionlist.json", "w") as f:   
                             f.write(json.dumps(list, indent=4))
                             f.close()
                     markflag = 0
@@ -249,26 +252,53 @@ def checker(user, release_type, list=list):
             #not found, add item
             if markflag == 1:
                 newverflag = 1
-                additem = {
-                    "Version": key.split("_")[1],
-                    "File name": "MicrosoftCorporationII.WindowsSubsystemForAndroid_" + key.split("_")[1] + "_neutral_~_8wekyb3d8bbwe.Msixbundle",
-                    "MD5": "null",
-                    "SHA256": "null",
-                    "UpdateID": [identities[key][0][0]]
-                }
-                list.append(additem)
-                with open(dir + "\\versionlist.json", "w") as f:   
-                    f.write(json.dumps(list, indent=4))
-                    f.close()
+                Filename = "MicrosoftCorporationII.WindowsSubsystemForAndroid_" + key.split("_")[1] + "_neutral_~_8wekyb3d8bbwe.Msixbundle"
                 url = getURL(user, identities[key][0][0], identities[key][0][1], release_type)
                 while url == "null":
                     url = getURL(user, identities[key][0][0], identities[key][0][1], release_type)
+                response = requests.get(url)
+                with open(Filename, "wb") as f:
+                    f.write(response.content)
+                    f.close()
+                if response.status_code == 200:
+                    with open(Filename, "wb") as f:
+                        for chunk in response.iter_content(8192):
+                            f.write(chunk)
+                    if os.path.exists(Filename):
+                        print("Successfully downloaded!")
+                        print("Calculating MD5 and SHA256...")
+                        md5_hash, sha256_hash = calculate_hashes(response)
+                        print(f"MD5: {md5_hash}")
+                        print(f"SHA256: {sha256_hash}")
+                else:
+                    print(f"Error downloading: {response.status_code}")
+                additem = {
+                    "Version": key.split("_")[1],
+                    "File name": Filename,
+                    "MD5": md5_hash,
+                    "SHA256": sha256_hash,
+                    "UpdateID": [identities[key][0][0]]
+                }
+                list.append(additem)
+                with open("versionlist.json", "w") as f:   
+                    f.write(json.dumps(list, indent=4))
+                    f.close()
                 sendEmail(
                     key.split("_")[1],
                     "MicrosoftCorporationII.WindowsSubsystemForAndroid_" + key.split("_")[1] + "_neutral_~_8wekyb3d8bbwe.Msixbundle",
                     url,
                     flag
                 )
+                with open("./WSA-Archive/UpdateInfo.cfg", "w") as f:
+                    f.write(f"Version={key.split('_')[1]}\nUpdateID={identities[key][0][0]}\nURL={url}")
+                    f.close()
+                git = (
+                    "cd ./WSA-Archive && "
+                    "git add UpdateInfo.cfg && "
+                    "git commit -m \"Update version " + key.split("_")[1] + "\" && "
+                    "git push origin main && exit"
+                )
+                subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()
                 print("New version found: " + key.split("_")[1])
                 print("File name: " + "MicrosoftCorporationII.WindowsSubsystemForAndroid_" + key.split("_")[1] + "_neutral_~_8wekyb3d8bbwe.Msixbundle")
                 print("URL: " + url)
@@ -286,66 +316,21 @@ def checker(user, release_type, list=list):
     )
     url = getURL(user, identities[max(info_list)][0][0], identities[max(info_list)][0][1], release_type)
     if url == "null":
-        print("Network error!")
-        return 1
+        print("Failed to get URL!")
     if newverflag == 0:
         print("Latest version: " + max(info_list).split("_")[1])
         print("File name: MicrosoftCorporationII.WindowsSubsystemForAndroid_" + max(info_list).split("_")[1] + "_neutral_~_8wekyb3d8bbwe.Msixbundle")
         print("URL: " + url)
         print("")
-
-while 1:
-    print("Loading config...\n")
-    config = {}
-    if os.path.exists(dir + "\\config.json"):
-        with open(dir + "\\config.json", "r") as f:
-            config = json.loads(f.read())
-            f.close()
+    if flag == 0:
+        flag = 1
+        release_id = identities[max(info_list)][0][0]
     else:
-        print("Config file not found! Please check your installation!")
-        exit()
-    users = {""}
-    if config["CheckBetaVersion"] == True:
-        if os.path.exists(ms_account_conf):
-            with open(ms_account_conf, "r") as f:
-                conf = Prop(f.read())
-                user_token = conf.get('user_code')
-        if config["UseLocalToken"] == False:
-            try:
-                if config["GetTokenURL"].startswith("https://raw.githubusercontent.com"):
-                    response = urllib.request.urlopen(config["GetTokenURL"])
-                    text = response.read().decode("utf-8")
-                else:
-                    response = requests.get(config["GetTokenURL"])
-                    text = response.text
-                user_code = Prop(text).get("user_code")
-                updatetime = Prop(text).get("update_time")
-                print("Successfully get user token from server!")
-                print(f"Last update time: {updatetime}\n")
-            except:
-                user_code = ""
-            if user_code == "":
-                print("Fail to get user token from server! Please check \"GetTokenURL\" in config.json, and make sure your Internet is working!")
-            elif user_token != user_code:
-                with open(ms_account_conf, "w") as f:
-                    f.write(f"user_code={user_code}")
-                    f.close()
-                print("Updated user token!")
-                user_token = user_code
-        users = {"", user_token}
-    print("Generating WSA download link...\n")
-    flag = 0
-    for user in users:
-        if user == "":
-            print("Checking retail version...\n")
-            if checker(user, "retail") == 1:
-                break
-            print("Checking Windows Insider version...\n")
-            if checker(user, "WIF") == 1:
-                break
-        else:
-            print("Checking WSA Insider version...\n")
-            if checker(user, "WIF") == 1:
-                break
-    waitfortimer()
+        print("Done!\n")
+git = (
+    "git add versionlist.json && git commit -m \"Update lost UpdateID\" && "
+    "git push && exit"
+)
+subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()
+url = getURL(user, identities[max(info_list)][0][0], identities[max(info_list)][0][1], release_type)
         
