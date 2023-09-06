@@ -62,6 +62,11 @@ tokenflag = "00"
 #check if release UpdateID is the same as the beta one
 release_id = ""
 
+#email information
+host_server = os.getenv("HOST_SERVER")
+sender_email = os.getenv("SENDER_EMAIL")
+sender_password = os.getenv("SENDER_PASSWORD")
+
 list = []
 if os.path.exists("versionlist.json"):
     with open("versionlist.json", "r") as f:
@@ -90,13 +95,10 @@ def getURL(user, UpdateID, RevisionNumber, ReleaseType):
         if url.split("/")[2] == "tlu.dl.delivery.mp.microsoft.com":
             return url
 
-def sendEmail(Version, Filename, URL, betaflag):
-    host_server = 'smtp.163.com'
-    sender_address = 'Ghost12345@163.com'
-    pwd = 'MJHEWYMVTCYSPEBE'
+def sendEmail(Version, Filename, URL, betaflag, host_server = host_server, sender_email = sender_email, sender_password = sender_password):
     receiver = ['917749218@qq.com']
     if betaflag == 0:
-        mail_title = f"[WSA]retail version {Version} Updated!"
+        mail_title = f"[WSA]Stable version {Version} Updated!"
     if betaflag == 1:
         mail_title = f"[WSA]Windows Insider version {Version} Updated!"
     if betaflag == 2:
@@ -104,12 +106,12 @@ def sendEmail(Version, Filename, URL, betaflag):
     mail_content = "File Name: " + Filename + "\nURL: " + URL
     msg = MIMEMultipart()
     msg["Subject"] = Header(mail_title,'utf-8')
-    msg["From"] = sender_address
+    msg["From"] = sender_email
     msg['To'] = ";".join(receiver)
     msg.attach(MIMEText(mail_content,'plain','utf-8'))
     smtp = SMTP_SSL(host_server)
-    smtp.login(sender_address,pwd)
-    smtp.sendmail(sender_address,receiver,msg.as_string())
+    smtp.login(sender_email, sender_password)
+    smtp.sendmail(sender_email, receiver, msg.as_string())
     smtp.quit()
 
 def calculate_hashes(data):
@@ -305,7 +307,9 @@ def checker(user, release_type, list = list):
 
 git = "git config --global user.email '917749218@qq.com' && git config --global user.name 'bubbles-wow'"
 subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()
-
+print()
+print("WSAUpdateChecker")
+print()
 users = {""}
 try:
     response = requests.get("https://api.github.com/repos/bubbles-wow/MS-Account-Token/contents/token.cfg")
@@ -332,7 +336,7 @@ print("Generating WSA download link...\n")
 flag = 0
 for user in users:
     if user == "":
-        print("Checking retail version...\n")
+        print("Checking Stable version...\n")
         if checker(user, "retail") == 1:
             break
         print("Checking Windows Insider version...\n")

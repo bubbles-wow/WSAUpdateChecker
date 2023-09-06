@@ -113,13 +113,13 @@ def sendEmail(Version, Filename, URL, betaflag):
     pwd = 'MJHEWYMVTCYSPEBE'
     receiver = ['917749218@qq.com']
     if betaflag == 0:
-        message = "[WSA]retail version Updated!"
-        mail_title = f"[WSA]retail version {Version} Updated!"
+        message = "Stable version Updated!"
+        mail_title = f"[WSA]Stable version {Version} Updated!"
     if betaflag == 1:
-        message = "[WSA]Windows Insider version Updated!"
+        message = "Windows Insider version Updated!"
         mail_title = f"[WSA]Windows Insider version {Version} Updated!"
     if betaflag == 2:
-        message = "[WSA]WSA Insider version Updated!"
+        message = "WSA Insider version Updated!"
         mail_title = f"[WSA]WSA Insider version {Version} Updated!"
     mail_content = "File Name: " + Filename + "\nURL: " + URL
     msg = MIMEMultipart()
@@ -294,6 +294,29 @@ def checker(user, release_type, list=list):
         print("URL: " + url)
         print("")
 
+def GetToken(url):
+    try:
+        if url.startswith("https://raw.githubusercontent.com"):
+            response = urllib.request.urlopen(url)
+            text = response.read().decode("utf-8")
+        else:
+            response = requests.get(url)
+            text = response.text
+        user_code = Prop(text).get("user_code")
+        updatetime = Prop(text).get("update_time")
+        print("Successfully get user token from server!")
+        print(f"Last update time: {updatetime}\n")
+    except:
+        user_code = ""
+    if user_code == "":
+        print("Fail to get user token from server! Please check \"GetTokenURL\" in config.json, and make sure your Internet is working!\n")
+    return user_code
+
+print("**********************************")
+print("  **                          **  ")
+print("   *     WSAUpdateChecker     *   ")
+print("  **                          **  ")
+print("**********************************")
 while 1:
     print("Loading config...\n")
     config = {}
@@ -311,22 +334,8 @@ while 1:
                 conf = Prop(f.read())
                 user_token = conf.get('user_code')
         if config["UseLocalToken"] == False:
-            try:
-                if config["GetTokenURL"].startswith("https://raw.githubusercontent.com"):
-                    response = urllib.request.urlopen(config["GetTokenURL"])
-                    text = response.read().decode("utf-8")
-                else:
-                    response = requests.get(config["GetTokenURL"])
-                    text = response.text
-                user_code = Prop(text).get("user_code")
-                updatetime = Prop(text).get("update_time")
-                print("Successfully get user token from server!")
-                print(f"Last update time: {updatetime}\n")
-            except:
-                user_code = ""
-            if user_code == "":
-                print("Fail to get user token from server! Please check \"GetTokenURL\" in config.json, and make sure your Internet is working!")
-            elif user_token != user_code:
+            user_code = GetToken(config["GetTokenURL"])
+            if user_code != user_token and user_code != "":
                 with open(ms_account_conf, "w") as f:
                     f.write(f"user_code={user_code}")
                     f.close()
@@ -337,7 +346,7 @@ while 1:
     flag = 0
     for user in users:
         if user == "":
-            print("Checking retail version...\n")
+            print("Checking Stable version...\n")
             if checker(user, "retail") == 1:
                 break
             print("Checking Windows Insider version...\n")

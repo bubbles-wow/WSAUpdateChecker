@@ -37,6 +37,9 @@ jobs:
         id: check
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
+          HOST_SERVER: ${{ secrets.HOST_SERVER }}
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
         run: |
           git clone https://${{ secrets.PAT }}@github.com/bubbles-wow/WSA-Archive.git WSA-Archive
           python3 WSAUpdateChecker_workflow.py
