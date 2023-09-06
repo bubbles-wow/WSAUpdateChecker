@@ -72,6 +72,12 @@ user_token = ""
 #check if release UpdateID is the same as the beta one
 release_id = ""
 
+#email information
+host_server = "smtp.163.com"
+sender_email = "Ghost12345@163.com"
+sender_password = "MJHEWYMVTCYSPEBE"
+receiver = ["917749218@qq.com"]
+
 list = []
 if os.path.exists(dir + "\\versionlist.json"):
     with open(dir + "\\versionlist.json", "r") as f:
@@ -107,11 +113,7 @@ def getURL(user, UpdateID, RevisionNumber, ReleaseType):
         if url.split("/")[2] == "tlu.dl.delivery.mp.microsoft.com":
             return url
 
-def sendEmail(Version, Filename, URL, betaflag):
-    host_server = 'smtp.163.com'
-    sender_address = 'Ghost12345@163.com'
-    pwd = 'MJHEWYMVTCYSPEBE'
-    receiver = ['917749218@qq.com']
+def sendEmail(Version, Filename, URL, betaflag, host_server = host_server, sender_email = sender_email, sender_password = sender_password, receiver = receiver):
     if betaflag == 0:
         message = "Stable version Updated!"
         mail_title = f"[WSA]Stable version {Version} Updated!"
@@ -124,12 +126,12 @@ def sendEmail(Version, Filename, URL, betaflag):
     mail_content = "File Name: " + Filename + "\nURL: " + URL
     msg = MIMEMultipart()
     msg["Subject"] = Header(mail_title,'utf-8')
-    msg["From"] = sender_address
+    msg["From"] = sender_email
     msg['To'] = ";".join(receiver)
     msg.attach(MIMEText(mail_content,'plain','utf-8'))
     smtp = SMTP_SSL(host_server)
-    smtp.login(sender_address,pwd)
-    smtp.sendmail(sender_address,receiver,msg.as_string())
+    smtp.login(sender_email, sender_password)
+    smtp.sendmail(sender_email, receiver, msg.as_string())
     smtp.quit()
     title = "WSA version " + Version + " is now available!"
     notification.notify(
@@ -312,11 +314,9 @@ def GetToken(url):
         print("Fail to get user token from server! Please check \"GetTokenURL\" in config.json, and make sure your Internet is working!\n")
     return user_code
 
-print("**********************************")
-print("  **                          **  ")
-print("   *     WSAUpdateChecker     *   ")
-print("  **                          **  ")
-print("**********************************")
+print()
+print("WSAUpdateChecker")
+print()
 while 1:
     print("Loading config...\n")
     config = {}

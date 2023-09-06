@@ -66,6 +66,7 @@ release_id = ""
 host_server = os.getenv("HOST_SERVER")
 sender_email = os.getenv("SENDER_EMAIL")
 sender_password = os.getenv("SENDER_PASSWORD")
+receiver = ["917749218@qq.com"]
 
 list = []
 if os.path.exists("versionlist.json"):
@@ -95,7 +96,7 @@ def getURL(user, UpdateID, RevisionNumber, ReleaseType):
         if url.split("/")[2] == "tlu.dl.delivery.mp.microsoft.com":
             return url
 
-def sendEmail(Version, Filename, URL, betaflag, host_server = host_server, sender_email = sender_email, sender_password = sender_password):
+def sendEmail(Version, Filename, URL, betaflag, host_server = host_server, sender_email = sender_email, sender_password = sender_password, receiver = receiver):
     receiver = ['917749218@qq.com']
     if betaflag == 0:
         mail_title = f"[WSA]Stable version {Version} Updated!"
