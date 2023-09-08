@@ -17,7 +17,8 @@ jobs:
         with:
           check-latest: true
           allow-prereleases: true
-          python-version: '3.x'
+          architecture: 'x64'
+          python-version: 'rc'
 
       - name: Install Ubuntu Dependencies 🧑‍🏭
         uses: awalsh128/cache-apt-pkgs-action@latest
