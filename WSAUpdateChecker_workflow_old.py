@@ -274,7 +274,7 @@ for user in users:
                     print(f"Error downloading: {response.status_code}")
                 additem = {
                     "Version": key.split("_")[1],
-                    "File name": Filename,
+                    "FileName": Filename,
                     "MD5": md5_hash,
                     "SHA256": sha256_hash,
                     "UpdateID": [identities[key][0][0]]

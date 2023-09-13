@@ -299,7 +299,7 @@ while 1:
                     newverflag = 1
                     additem = {
                         "Version": key.split("_")[1],
-                        "File name": "MicrosoftCorporationII.WindowsSubsystemForAndroid_" + key.split("_")[1] + "_neutral_~_8wekyb3d8bbwe.Msixbundle",
+                        "FileName": "MicrosoftCorporationII.WindowsSubsystemForAndroid_" + key.split("_")[1] + "_neutral_~_8wekyb3d8bbwe.Msixbundle",
                         "MD5": "null",
                         "SHA256": "null",
                         "UpdateID": [identities[key][0][0]]
