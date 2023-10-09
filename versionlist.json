@@ -536,7 +536,8 @@
             "8402ef39-3e56-4fb6-9930-8c6889ed4eab",
             "712070a5-bc9f-4cc7-a046-4835ef2a91f8",
             "7ba076f6-0788-4fad-9d77-8259d9244112",
-            "d2ff8d19-d609-4158-b2e4-1a012e31babe"
+            "d2ff8d19-d609-4158-b2e4-1a012e31babe",
+            "241fe18d-324e-433b-9182-79808dff9530"
         ]
     },
     {
@@ -814,7 +815,8 @@
             "92bd1661-b48e-4cfa-9f0c-2fe726fc12aa",
             "d0a3fd7d-3cca-45bd-bbb3-12a9e693f5a6",
             "83749c85-61cc-4767-be90-dfef49655f70",
-            "83da2bd7-f718-4fcd-b4d9-c6c32cd887eb"
+            "83da2bd7-f718-4fcd-b4d9-c6c32cd887eb",
+            "534bf8f2-40fb-4903-8b36-b6dd51675649"
         ]
     },
     {
@@ -1072,7 +1074,8 @@
             "bfc54b95-9f2e-4e48-aae8-1da61c5657fe",
             "758c474b-7b7c-4a81-bcaa-9feab5169919",
             "ff63465d-899c-4d91-937e-66c19938231c",
-            "9e21e081-9394-4a26-b184-056b8e26fdab"
+            "9e21e081-9394-4a26-b184-056b8e26fdab",
+            "378b0454-5dc5-447e-b7a8-2b48f577a7fd"
         ]
     },
     {
@@ -1571,7 +1574,8 @@
             "20b5afab-e359-401e-95f3-c12e129a7ea6",
             "f345f525-509a-4fde-9e4d-b45654d27006",
             "cacb50dc-c3b3-4304-ba8f-a2505fbc1bfd",
-            "f7cbeec3-718c-444a-890d-67990040fe92"
+            "f7cbeec3-718c-444a-890d-67990040fe92",
+            "5a3dfd51-730e-40b7-b5e0-1024a45b742a"
         ]
     },
     {
@@ -1862,7 +1866,8 @@
             "a54b2e6f-8ed7-4278-9706-04fde34afa1c",
             "cab32b50-677b-4ddc-bd5f-c0fdb55155c7",
             "d0f3bc4c-2f34-4163-99fb-dde1b77f43c7",
-            "9a49a117-3ce6-45f3-bf36-cb8db3a16602"
+            "9a49a117-3ce6-45f3-bf36-cb8db3a16602",
+            "b4f02d10-4844-4013-94a7-47188ca38ba9"
         ]
     },
     {
@@ -1971,7 +1976,8 @@
             "bbf66dba-d9fc-4f75-8f01-cd69353f4846",
             "2e8ad5e8-54f2-413c-be2d-c08d42cd0ded",
             "b0857720-04ec-490e-ae29-2b4a59c37006",
-            "6c4536dd-c986-4989-b7c3-c9cd36bf180c"
+            "6c4536dd-c986-4989-b7c3-c9cd36bf180c",
+            "36588850-fa7b-4118-8143-9aa18bde6f5f"
         ]
     },
     {
@@ -2098,7 +2104,9 @@
             "d68d92fb-13f9-425d-a44c-8e489dea1e56",
             "02080ac6-69a2-4629-ae77-ad059454daf4",
             "dbb44c31-7b3b-4dad-b770-5ba984527e53",
-            "82dd2e61-9158-40e0-9ddc-ebca7d55e5b3"
+            "82dd2e61-9158-40e0-9ddc-ebca7d55e5b3",
+            "df9d61f3-937d-4916-8681-f766592938d8",
+            "2fff9ce7-8201-4108-8b77-646b851b2ab7"
         ]
     },
     {
@@ -2125,7 +2133,8 @@
             "902fcc3a-d9db-47b3-8845-c3802dac359e",
             "3b9ea361-906e-4b29-82c3-1822843ba9ba",
             "f01bb3c8-b7b5-48c2-b58a-5f80344adae9",
-            "bc68fa13-a629-4756-917a-7034eca56b7e"
+            "bc68fa13-a629-4756-917a-7034eca56b7e",
+            "7d39df17-3b0f-4f09-abfe-923835132bb8"
         ]
     },
     {
@@ -2138,7 +2147,17 @@
             "f5280d4e-836a-43fe-912a-5dd63050725a",
             "bde343e0-60c8-46ce-bd97-831a5bec9c0d",
             "6821e291-232d-4ccc-96d7-21b2b1d520cf",
-            "59091d22-ec03-433f-908a-de7b691a6901"
+            "59091d22-ec03-433f-908a-de7b691a6901",
+            "6a91764d-6b86-492a-a0c2-c015ac49ccce"
+        ]
+    },
+    {
+        "Version": "2309.40000.7.0",
+        "FileName": "MicrosoftCorporationII.WindowsSubsystemForAndroid_2309.40000.7.0_neutral_~_8wekyb3d8bbwe.Msixbundle",
+        "MD5": "37121fcf959349c783c73a8a700a29fb",
+        "SHA256": "4cc4a2bc57f1ec7e72ae8be24ab6ab0cd6b0603d4493b4611f8fe921891be187",
+        "UpdateID": [
+            "cafd1719-de54-4b33-be74-bdb26553190a"
         ]
     }
 ]
