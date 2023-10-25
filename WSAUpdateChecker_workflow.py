@@ -1,7 +1,6 @@
 import os
 import html
 import json
-import time
 import base64
 import logging
 import hashlib
@@ -238,6 +237,10 @@ def checker(user, release_type, list = list):
                 url = getURL(user, identities[key][0][0], identities[key][0][1], release_type)
                 while url == "null":
                     url = getURL(user, identities[key][0][0], identities[key][0][1], release_type)
+                print("New version found: " + key.split("_")[1])
+                print("File name: " + "MicrosoftCorporationII.WindowsSubsystemForAndroid_" + key.split("_")[1] + "_neutral_~_8wekyb3d8bbwe.Msixbundle")
+                print("URL: " + url)
+                print("")
                 response = requests.get(url)
                 with open(Filename, "wb") as f:
                     f.write(response.content)
@@ -275,16 +278,14 @@ def checker(user, release_type, list = list):
                     f.write(f"Version={key.split('_')[1]}\nUpdateID={identities[key][0][0]}\nURL={url}")
                     f.close()
                 git = (
+                    "git add versionlist.json && git commit -m \"Update version " + key.split('_')[1] + "\" && "
+                    "git push && "
                     "cd ./WSA-Archive && "
                     "git add UpdateInfo.cfg && "
                     "git commit -m \"Update version " + key.split("_")[1] + "\" && "
                     "git push origin main && exit"
                 )
                 subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()
-                print("New version found: " + key.split("_")[1])
-                print("File name: " + "MicrosoftCorporationII.WindowsSubsystemForAndroid_" + key.split("_")[1] + "_neutral_~_8wekyb3d8bbwe.Msixbundle")
-                print("URL: " + url)
-                print("")
     #sort the list
     list = sorted(
         list, 
@@ -306,8 +307,6 @@ def checker(user, release_type, list = list):
         print("URL: " + url)
         print("")
 
-git = "git config --global user.email '917749218@qq.com' && git config --global user.name 'bubbles-wow'"
-subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()
 print()
 print("WSAUpdateChecker")
 print()
@@ -334,6 +333,8 @@ else:
     user_token = user_code
 users = {"", user_token}
 print("Generating WSA download link...\n")
+# Check if needs push to GitHub
+curTime = os.path.getmtime("versionlist.json")
 flag = 0
 for user in users:
     if user == "":
@@ -351,5 +352,5 @@ git = (
     "git add versionlist.json && git commit -m \"Update lost UpdateID\" && "
     "git push && exit"
 )
-subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()
-        
+if os.path.getmtime("versionlist.json") != curTime:
+    subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()

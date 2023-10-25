@@ -7,7 +7,7 @@ on:
     - cron: '* * * * *'
 
 jobs:
-  build:
+  Check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -18,22 +18,11 @@ jobs:
           check-latest: true
           python-version: '3.x'
 
-      - name: Install Ubuntu Dependencies 🧑‍🏭
-        uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: e2fsprogs attr unzip qemu-utils python3-venv
-          version: 1.0
-
-      - name: Install Python dependencies
+      - name: Install Python dependencies 📦
         run: 
           pip install requests
 
-      - name: Set up Git
-        run: |
-          git config --global user.email "917749218@qq.com"
-          git config --global user.name "bubbles-wow"
-
-      - name: Check update
+      - name: Check Update 📡
         id: check
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
@@ -41,5 +30,7 @@ jobs:
           SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
           SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
         run: |
+          git config --global user.email '917749218@qq.com'
+          git config --global user.name 'bubbles-wow'
           git clone https://${{ secrets.PAT }}@github.com/bubbles-wow/WSA-Archive.git WSA-Archive
           python3 WSAUpdateChecker_workflow.py

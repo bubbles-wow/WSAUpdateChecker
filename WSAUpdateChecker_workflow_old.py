@@ -256,6 +256,10 @@ for user in users:
                 url = getURL(user, identities[key][0][0], identities[key][0][1], release_type)
                 while url == "null":
                     url = getURL(user, identities[key][0][0], identities[key][0][1], release_type)
+                print("New version found: " + key.split("_")[1])
+                print("File name: " + "MicrosoftCorporationII.WindowsSubsystemForAndroid_" + key.split("_")[1] + "_neutral_~_8wekyb3d8bbwe.Msixbundle")
+                print("URL: " + url)
+                print("")
                 response = requests.get(url)
                 with open(Filename, "wb") as f:
                     f.write(response.content)
@@ -299,10 +303,6 @@ for user in users:
                     "git push origin main && exit"
                 )
                 subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()
-                print("New version found: " + key.split("_")[1])
-                print("File name: " + "MicrosoftCorporationII.WindowsSubsystemForAndroid_" + key.split("_")[1] + "_neutral_~_8wekyb3d8bbwe.Msixbundle")
-                print("URL: " + url)
-                print("")
     #sort the list
     list = sorted(
         list, 
