@@ -212,17 +212,17 @@ def checker(user, release_type, list=list):
     info_list = sorted(
         info_list,
         key=lambda x: (
-            x.split("_")[1].split(".")[0],
-            x.split("_")[1].split(".")[1],
-            x.split("_")[1].split(".")[2],
-            x.split("_")[1].split(".")[3]
+            int(x.split("_")[1].split(".")[0]),
+            int(x.split("_")[1].split(".")[1]),
+            int(x.split("_")[1].split(".")[2]),
+            int(x.split("_")[1].split(".")[3])
         ),
-        reverse=False
+        reverse=True
     )
     if flag == 1:
-        release_id = identities[max(info_list)][0][0]
+        release_id = identities[info_list[0]][0][0]
     if flag == 2:
-        if identities[max(info_list)][0][0] == release_id:
+        if identities[info_list[0]][0][0] == release_id:
             print("Invaild token!")
             return 1
     #record if the version is already in the list
@@ -286,13 +286,13 @@ def checker(user, release_type, list=list):
         ),
         reverse=False
     )
-    url = getURL(user, identities[max(info_list)][0][0], identities[max(info_list)][0][1], release_type)
+    url = getURL(user, identities[info_list[0]][0][0], identities[info_list[0]][0][1], release_type)
     if url == "null":
         print("Network error!")
         return 1
     if newverflag == 0:
-        print("Latest version: " + max(info_list).split("_")[1])
-        print("File name: MicrosoftCorporationII.WindowsSubsystemForAndroid_" + max(info_list).split("_")[1] + "_neutral_~_8wekyb3d8bbwe.Msixbundle")
+        print("Latest version: " + info_list[0].split("_")[1])
+        print("File name: MicrosoftCorporationII.WindowsSubsystemForAndroid_" + info_list[0].split("_")[1] + "_neutral_~_8wekyb3d8bbwe.Msixbundle")
         print("URL: " + url)
         print("")
 

@@ -251,14 +251,14 @@ while 1:
         info_list = sorted(
             info_list,
             key=lambda x: (
-                x.split("_")[1].split(".")[0],
-                x.split("_")[1].split(".")[1],
-                x.split("_")[1].split(".")[2],
-                x.split("_")[1].split(".")[3]
+                int(x.split("_")[1].split(".")[0]),
+                int(x.split("_")[1].split(".")[1]),
+                int(x.split("_")[1].split(".")[2]),
+                int(x.split("_")[1].split(".")[3])
             ),
-            reverse=False
+            reverse=True
         )
-        if flag == 1 and release_id == identities[max(info_list)][0][0]:
+        if flag == 1 and release_id == identities[info_list[0]][0][0]:
             print("Your user token is invalid, please check it.")
             notification.notify(
                 title = "Please update your user token!",
@@ -332,13 +332,13 @@ while 1:
             ),
             reverse=False
         )
-        url = getURL(user, identities[max(info_list)][0][0], identities[max(info_list)][0][1], release_type)
+        url = getURL(user, identities[info_list[0]][0][0], identities[info_list[0]][0][1], release_type)
         if url == "null":
             error()
             break
         if newverflag == 0:
-            print("Latest version: " + max(info_list).split("_")[1])
-            print("File name: MicrosoftCorporationII.WindowsSubsystemForAndroid_" + max(info_list).split("_")[1] + "_neutral_~_8wekyb3d8bbwe.Msixbundle")
+            print("Latest version: " + info_list[0].split("_")[1])
+            print("File name: MicrosoftCorporationII.WindowsSubsystemForAndroid_" + info_list[0].split("_")[1] + "_neutral_~_8wekyb3d8bbwe.Msixbundle")
             print("URL: " + url)
             print("")
         elif newverflag == 1:
@@ -350,7 +350,7 @@ while 1:
             print("Done!\n")
         elif flag == 0 and config["CheckBetaVersion"] == True:
             flag = 1
-            release_id = identities[max(info_list)][0][0]
+            release_id = identities[info_list[0]][0][0]
         else:
             for i in range(timer,-1,-1):
                 print(f"\rThe program will reboot in {i} seconds.",end="")
