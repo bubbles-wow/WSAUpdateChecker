@@ -1,0 +1,5 @@
+{
+    "CheckBetaVersion": true,
+    "UseLocalToken": false,
+    "GetTokenURL": "https://raw.githubusercontent.com/bubbles-wow/MS-Account-Token/main/token.cfg"
+}
