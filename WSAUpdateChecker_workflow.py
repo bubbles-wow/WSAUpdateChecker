@@ -131,6 +131,7 @@ def checker(user, release_type, list = list):
     #newverflag == 1 -> new version found
     newverflag = 0
     global release_id
+    global curTime
     if release_type == "WIF":
         flag = 1
     if user != "":
@@ -233,6 +234,13 @@ def checker(user, release_type, list = list):
             #not found, add item
             if markflag == 1:
                 newverflag = 1
+                git = (
+                    "git add versionlist.json && git commit -m \"Update lost UpdateID\" && "
+                    "git push && exit"
+                )
+                if os.path.getmtime("versionlist.json") != curTime:
+                    subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()
+                    curTime = os.path.getmtime("versionlist.json")
                 Filename = "MicrosoftCorporationII.WindowsSubsystemForAndroid_" + key.split("_")[1] + "_neutral_~_8wekyb3d8bbwe.Msixbundle"
                 url = getURL(user, identities[key][0][0], identities[key][0][1], release_type)
                 while url == "null":
@@ -286,6 +294,7 @@ def checker(user, release_type, list = list):
                     "git push origin main && exit"
                 )
                 subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()
+                curTime = os.path.getmtime("versionlist.json")
     #sort the list
     list = sorted(
         list, 
