@@ -2683,5 +2683,14 @@
             "4ecdde63-57cb-47bb-ab59-67efa9924652",
             "a20847b5-2c87-441c-b39f-276962ff7052"
         ]
+    },
+    {
+        "Version": "2310.40000.2.0",
+        "FileName": "MicrosoftCorporationII.WindowsSubsystemForAndroid_2310.40000.2.0_neutral_~_8wekyb3d8bbwe.Msixbundle",
+        "MD5": "980130071336fe8666db6ea9f5501216",
+        "SHA256": "c9d897ea27b66bc379be707f8be8dfc5d67fb3edf17151a52944881c8ec55d76",
+        "UpdateID": [
+            "16760986-da0f-4f1f-b5ef-13917fd73b25"
+        ]
     }
 ]
