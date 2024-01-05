@@ -3194,5 +3194,14 @@
             "0a77caaf-3443-4e2d-a04e-b3d1a604e36f",
             "37d56d1f-7b85-4de5-80b5-01170feeb01e"
         ]
+    },
+    {
+        "Version": "2311.40000.5.0",
+        "FileName": "MicrosoftCorporationII.WindowsSubsystemForAndroid_2311.40000.5.0_neutral_~_8wekyb3d8bbwe.Msixbundle",
+        "MD5": "dce9813cfe4a7b5e5b4c8531b16115c3",
+        "SHA256": "4d9e7a45f6c8b6bc11895bdde96e69d3b3cc021344a897134b257f6700ddf4d3",
+        "UpdateID": [
+            "fd630d0f-3728-46b9-9813-935e3854e3a4"
+        ]
     }
 ]
