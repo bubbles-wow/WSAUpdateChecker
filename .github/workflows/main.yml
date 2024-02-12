@@ -1,0 +1,42 @@
+name: WSAUpdateChecker
+
+on:
+  workflow_dispatch:
+    
+  schedule:
+    - cron: '* * * * *'
+
+jobs:
+  Check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python 🏭
+        uses: actions/setup-python@v5
+        with:
+          check-latest: true
+          python-version: '3.x'
+
+      - name: Install Python dependencies 📦
+        run: 
+          pip install requests
+
+      - name: Check Update 📡
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+          HOST_SERVER: ${{ secrets.HOST_SERVER }}
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
+          RECEIVER_EMAIL: ${{ secrets.OWNER_EMAIL }}
+          ARCHIVE_REPOS: ${{ secrets.ARCHIVE_REPOSITORY }}
+        run: |
+          git config --global user.email '${{ secrets.OWNER_EMAIL }}'
+          git config --global user.name '${{ github.repository_owner }}'
+          git clone https://${{ secrets.PAT }}@github.com/${{ github.repository_owner }}/${{ secrets.ARCHIVE_REPOSITORY }}.git || update_archive=false
+          if [[ ${update_archive} == false ]]; then
+            python3 WSAUpdateChecker.py --no-archive
+          else
+            python3 WSAUpdateChecker.py
+          fi
