@@ -316,28 +316,12 @@ def checker(user, release_type, list = list):
         print("")
 
 print("Processing...\n")
-users = {""}
-try:
-    response = requests.get("https://api.github.com/repos/bubbles-wow/MS-Account-Token/contents/token.cfg")
-    if response.status_code == 200:
-        content = response.json()["content"]
-        content = content.encode("utf-8")
-        content = base64.b64decode(content)
-        text = content.decode("utf-8")
-        user_code = Prop(text).get("user_code")
-        updatetime = Prop(text).get("update_time")
-        print("Successfully get user token from server!")
-        print(f"Last update time: {updatetime}\n")
-    else:
-        user_code = ""
-        print(f"Failed to get user token from server! Error code: {response.status_code}\n")
-except:
-    user_code = ""
-if user_code == "":
-    users = {""}
-else:
-    user_token = user_code
-users = {"", user_token}
+user_code = ""
+with open("token.conf", "r") as f:
+    text = f.read()
+    user_code = Prop(text).get("user_code")
+    f.close()
+users = {"", user_code}
 # Check if needs push to GitHub
 cur_time = os.path.getmtime("List.json")
 
