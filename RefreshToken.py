@@ -59,9 +59,9 @@ def refresh_token(path):
         f.close()
 
 if __name__ == "__main__":
-    path = os.path.dirname(__file__)
-    thread = Thread(target=refresh_token, args=(path))
-    thread.setDaemon(True)
+    path = os.path.dirname(os.path.abspath(__file__))
+    thread = Thread(target=refresh_token, args=(path,))
+    thread.daemon = True
     thread.start()
     thread.join(150)
     if thread.is_alive():
