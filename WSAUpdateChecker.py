@@ -101,7 +101,7 @@ def send_email(Version, Filename, URL, check_type, host_server = host_server, se
     msg = MIMEMultipart()
     msg["Subject"] = Header(mail_title,'utf-8')
     msg["From"] = sender_email
-    msg['To'] = ";".join(receiver)
+    msg['To'] = ",".join(receiver.split(','))
     msg.attach(MIMEText(mail_content,'plain','utf-8'))
     smtp = SMTP_SSL(host_server)
     smtp.login(sender_email, sender_password)
