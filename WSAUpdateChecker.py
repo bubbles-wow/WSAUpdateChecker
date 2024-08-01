@@ -2,7 +2,6 @@ import os
 import sys
 import html
 import json
-import base64
 import logging
 import hashlib
 import requests
@@ -215,7 +214,7 @@ def checker(user, release_type, list = list):
                         response = requests.get(url)
                         Filename = file_name_format.format(key.split("_")[1])
                         if response.status_code == 200:
-                            print(f"Missing MD5 or SHA256 value in version {key.split("_")[1]}, Calculating...")
+                            print(f"Missing MD5 or SHA256 value in version {key.split('_')[1]}, Calculating...")
                             md5_hash, sha256_hash = calculate_hashes(response)
                             print(f"MD5: {md5_hash}")
                             print(f"SHA256: {sha256_hash}")
@@ -299,7 +298,7 @@ def checker(user, release_type, list = list):
                     f.close()
                 
                 command_update_list = f"git add List.json && git commit -m \"Update version {key.split('_')[1]}\" && git push && exit"
-                command_update_archive = f"cd ./{archive_repos} && git add UpdateInfo.cfg && git commit -m \"Update version {key.split("_")[1]}\" && git push && exit"
+                command_update_archive = f"cd ./{archive_repos} && git add UpdateInfo.cfg && git commit -m \"Update version {key.split('_')[1]}\" && git push && exit"
                 subprocess.Popen(command_update_list, shell=True, stdout=None, stderr=None).wait()
                 if archive_repos != None:
                     subprocess.Popen(command_update_archive, shell=True, stdout=None, stderr=None).wait()
@@ -315,30 +314,31 @@ def checker(user, release_type, list = list):
         print("URL: " + url)
         print("")
 
-print("Processing...\n")
-user_code = ""
-with open("token.conf", "r") as f:
-    text = f.read()
-    user_code = Prop(text).get("user_code")
-    f.close()
-users = {"", user_code}
-# Check if needs push to GitHub
-cur_time = os.path.getmtime("List.json")
+if __name__ == "__main__":
+    print("Processing...\n")
+    user_code = ""
+    with open("token.conf", "r") as f:
+        text = f.read()
+        user_code = Prop(text).get("user_code")
+        f.close()
+    users = {"", user_code}
+    # Check if needs push to GitHub
+    cur_time = os.path.getmtime("List.json")
 
-for user in users:
-    if user == "":
-        print("Checking Stable version...\n")
-        if checker(user, "retail") == 1:
-            break
-        print("Checking Windows Insider version...\n")
-        if checker(user, "WIF") == 1:
-            break
-    else:
-        print("Checking WSA Insider version...\n")
-        if checker(user, "WIF") == 1:
-            break
-git = "git add List.json && git commit -m \"Add UpdateID\" && git push && exit"
-if os.path.getmtime("List.json") != cur_time:
-    subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()
+    for user in users:
+        if user == "":
+            print("Checking Stable version...\n")
+            if checker(user, "retail") == 1:
+                break
+            print("Checking Windows Insider version...\n")
+            if checker(user, "WIF") == 1:
+                break
+        else:
+            print("Checking WSA Insider version...\n")
+            if checker(user, "WIF") == 1:
+                break
+    git = "git add List.json && git commit -m \"Add UpdateID\" && git push && exit"
+    if os.path.getmtime("List.json") != cur_time:
+        subprocess.Popen(git, shell=True, stdout=None, stderr=None).wait()
 
-print("All done!")
+    print("All done!")
