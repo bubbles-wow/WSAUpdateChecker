@@ -26,8 +26,9 @@ jobs:
           RECEIVER_EMAIL: ${{ secrets.OWNER_EMAIL }}
           ARCHIVE_REPOS: ${{ secrets.ARCHIVE_REPOSITORY }}
         run: |
-          git config --global user.email '${{ secrets.OWNER_EMAIL }}'
-          git config --global user.name '${{ github.repository_owner }}'
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git remote set-url origin https://${{ secrets.PAT }}@github.com/${{ github.repository }}.git
           git clone https://${{ secrets.PAT }}@github.com/${{ github.repository_owner }}/${{ secrets.ARCHIVE_REPOSITORY }}.git || update_archive=false
           if [[ ${update_archive} == false ]]; then
             python3 WSAUpdateChecker.py --no-archive
